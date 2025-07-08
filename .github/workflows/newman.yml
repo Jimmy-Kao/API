@@ -1,0 +1,31 @@
+name: Newman API Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-newman-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: ⚙️ Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: 📦 Install Newman
+      run: npm install -g newman
+
+    - name: 🚀 Run Newman Tests
+      run: |
+        newman run C:\\Users\\jimmy\\Downloads\\CreateTicks.json \
+          --delay-request 3000 \
+          --insecure \
+          --env-var "uat=https://trade.gtsuat.com/v2" \
+          --env-var "mtrade=https://mtrade.gtsuat.com/v1"
