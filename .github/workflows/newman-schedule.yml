@@ -1,0 +1,30 @@
+name: Newman API Runner (Scheduled)
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # Runs every 10 minutes
+  workflow_dispatch:        # Allows manual trigger
+
+jobs:
+  run-newman:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Run Postman Collection
+        run: |
+          newman run CreateTicks.json \
+            --env-var "prd=https://trade.ytjokbt.com/v2" \
+            --env-var "prd_mtrade=https://39.108.127.136:6007/v1" \
+            --delay-request 3000 \
+            --insecure
