@@ -8,9 +8,9 @@ from datetime import datetime
 current_row = 0
 
 # 路徑設定
-csv_path = "C:\\Users\\jimmy\\Downloads\\prd_accounts.csv"
-collection_path = "C:\\Users\\jimmy\\prd_create_account.json"
-temp_csv_path = "C:\\Users\\jimmy\\Downloads\\temp_account_row.csv"
+csv_path = "prd_accounts.csv" # C:\\Users\\jimmy\\Downloads\\prd_accounts.csv
+collection_path = "prd_create_account.json" # C:\\Users\\jimmy\\Downloads\\prd_create_account.json
+temp_csv_path = "temp_account_row.csv" # C:\\Users\\jimmy\\Downloads\\temp_account_row.csv
 
 def run_next_row():
     global current_row
