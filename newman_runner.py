@@ -1,57 +1,54 @@
-import schedule
+# newman_runner.py
+
 import os
-import time
 import csv
 from datetime import datetime
 
-# 全域變數追蹤目前執行到第幾列
-current_row = 0
+CSV_PATH = "prd_accounts.csv"
+COLLECTION_PATH = "prd_create_account.json"
+TEMP_CSV_PATH = "temp_account_row.csv"
+TRACKER_FILE = "current_row.txt"  # Track which row was last run
 
-# 路徑設定
-csv_path = "prd_accounts.csv" # C:\\Users\\jimmy\\Downloads\\prd_accounts.csv
-collection_path = "prd_create_account.json" # C:\\Users\\jimmy\\Downloads\\prd_create_account.json
-temp_csv_path = "temp_account_row.csv" # C:\\Users\\jimmy\\Downloads\\temp_account_row.csv
+def get_current_row():
+    if not os.path.exists(TRACKER_FILE):
+        return 0
+    with open(TRACKER_FILE, "r") as f:
+        return int(f.read().strip())
+
+def save_current_row(row_num):
+    with open(TRACKER_FILE, "w") as f:
+        f.write(str(row_num))
 
 def run_next_row():
-    global current_row
-
-    with open(csv_path, newline='', encoding='utf-8') as f:
-        rows = list(csv.reader(f))
+    current_row = get_current_row()
+    with open(CSV_PATH, newline='', encoding='utf-8') as csvfile:
+        rows = list(csv.reader(csvfile))
         header = rows[0]
         data_rows = rows[1:]
 
         if current_row >= len(data_rows):
-            print("✅ 所有帳號已執行完成。")
-            return  # 可改為 current_row = 0 以重新循環
+            print("✅ All accounts have been processed.")
+            return
 
-        # 建立只含該列的暫存 CSV
-        with open(temp_csv_path, 'w', newline='', encoding='utf-8') as temp:
-            writer = csv.writer(temp)
+        # Create temp CSV for current row
+        with open(TEMP_CSV_PATH, "w", newline='', encoding='utf-8') as temp_csv:
+            writer = csv.writer(temp_csv)
             writer.writerow(header)
             writer.writerow(data_rows[current_row])
 
-        # 執行 newman
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f"[{now}] ▶ Running row {current_row + 1}/{len(data_rows)}")
+        print(f"[{datetime.now()}] ▶ Running row {current_row + 1}/{len(data_rows)}")
 
         command = (
-            f'newman run "{collection_path}" '
+            f'newman run "{COLLECTION_PATH}" '
             f'--delay-request 3000 '
-            f'--iteration-data "{temp_csv_path}" '
+            f'--iteration-data "{TEMP_CSV_PATH}" '
             f'--env-var "prd=https://trade.ytjokbt.com/v2" '
             f'--env-var "prd_mtrade=https://39.108.127.136:6007/v1" '
             f'--insecure'
         )
         os.system(command)
 
-        current_row += 1
+        save_current_row(current_row + 1)
 
-# 每 10 分鐘執行一次
-schedule.every(10).minutes.do(run_next_row)
-
-print("🕒 Newman row-by-row runner started...")
-
-# 主迴圈
-while True:
-    schedule.run_pending()
-    time.sleep(10)
+if __name__ == "__main__":
+    run_next_row()

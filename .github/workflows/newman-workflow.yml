@@ -1,32 +1,30 @@
-name: Run Newman Row by Row
+name: Newman Runner Hourly
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour
-  workflow_dispatch:     # Allow manual run
+    - cron: '0 * * * *'  # Runs every hour on the hour UTC
+  workflow_dispatch:      # Manual trigger
 
 jobs:
-  run-newman-script:
+  run-newman:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install schedule
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install schedule
 
-    - name: Install Newman
-      run: |
-        npm install -g newman
+      - name: Install Newman
+        run: npm install -g newman
 
-    - name: Run Newman Python Script
-      run: |
-        python newman_runner.py
+      - name: Run newman_runner.py
+        run: python newman_runner.py
