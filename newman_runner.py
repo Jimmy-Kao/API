@@ -1,13 +1,11 @@
-# newman_runner.py
-
 import os
 import csv
 from datetime import datetime
 
-CSV_PATH = "prd_accounts.csv"
-COLLECTION_PATH = "prd_create_account.json"
-TEMP_CSV_PATH = "temp_account_row.csv"
-TRACKER_FILE = "current_row.txt"  # Track which row was last run
+CSV_FILE = "prd_accounts.csv"
+TEMP_CSV = "temp_account_row.csv"
+COLLECTION_FILE = "prd_create_account.json"
+TRACKER_FILE = "current_row.txt"
 
 def get_current_row():
     if not os.path.exists(TRACKER_FILE):
@@ -15,40 +13,38 @@ def get_current_row():
     with open(TRACKER_FILE, "r") as f:
         return int(f.read().strip())
 
-def save_current_row(row_num):
+def save_current_row(row):
     with open(TRACKER_FILE, "w") as f:
-        f.write(str(row_num))
+        f.write(str(row))
 
-def run_next_row():
+def run_one_row():
     current_row = get_current_row()
-    with open(CSV_PATH, newline='', encoding='utf-8') as csvfile:
-        rows = list(csv.reader(csvfile))
-        header = rows[0]
-        data_rows = rows[1:]
 
-        if current_row >= len(data_rows):
-            print("✅ All accounts have been processed.")
+    with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
+        rows = list(csv.reader(csvfile))
+        header, data = rows[0], rows[1:]
+
+        if current_row >= len(data):
+            print("✅ All rows processed. Done.")
             return
 
-        # Create temp CSV for current row
-        with open(TEMP_CSV_PATH, "w", newline='', encoding='utf-8') as temp_csv:
-            writer = csv.writer(temp_csv)
+        # Write only current row to temp CSV
+        with open(TEMP_CSV, "w", newline='', encoding='utf-8') as temp:
+            writer = csv.writer(temp)
             writer.writerow(header)
-            writer.writerow(data_rows[current_row])
+            writer.writerow(data[current_row])
 
-        print(f"[{datetime.now()}] ▶ Running row {current_row + 1}/{len(data_rows)}")
-
-        command = (
-            f'newman run "{COLLECTION_PATH}" '
+        print(f"▶ Running row {current_row + 1}/{len(data)} at {datetime.now()}")
+        os.system(
+            f'newman run "{COLLECTION_FILE}" '
+            f'--iteration-data "{TEMP_CSV}" '
             f'--delay-request 3000 '
-            f'--iteration-data "{TEMP_CSV_PATH}" '
             f'--env-var "prd=https://trade.ytjokbt.com/v2" '
             f'--env-var "prd_mtrade=https://39.108.127.136:6007/v1" '
             f'--insecure'
         )
-        os.system(command)
 
         save_current_row(current_row + 1)
 
 if __name__ == "__main__":
-    run_next_row()
+    run_one_row()
