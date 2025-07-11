@@ -34,7 +34,7 @@ def run_one_row():
             writer.writerow(header)
             writer.writerow(data[current_row])
 
-        print(f"▶ Running row {current_row + 1}/{len(data)} at {datetime.now()}")
+        print(f"> Running row {current_row + 1}/{len(data)} at {datetime.now()}")
         os.system(
             f'newman run "{COLLECTION_FILE}" '
             f'--iteration-data "{TEMP_CSV}" '
