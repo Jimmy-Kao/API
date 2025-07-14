@@ -1,0 +1,27 @@
+name: append_new_account Run Newman Every 10 Minutes
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # Every 10 minutes
+  workflow_dispatch:        # Allow manual trigger
+
+jobs:
+  run-newman:
+    runs-on: self-hosted  # Use your local runner
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install schedule
+
+      - name: Run Python Newman Script
+        run: python append_new_account.py
+        env:
+          PRD: https://trade.ytjokbt.com/v2
+          PRD_MTRADE: https://39.108.127.136:6007/v1
