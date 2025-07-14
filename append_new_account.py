@@ -2,10 +2,10 @@ import os
 import csv
 from datetime import datetime
 
-CSV_FILE = "prd_accounts.csv"
-TEMP_CSV = "temp_account_row.csv"
-COLLECTION_FILE = "prd_create_account.json"
-TRACKER_FILE = "current_row.txt"
+CSV_FILE = "C:\\Users\\jimmy\\Downloads\\python_script\\prd_accounts.csv"
+TEMP_CSV = "C:\\Users\\jimmy\\Downloads\\python_script\\temp_account_row.csv"
+COLLECTION_FILE = "C:\\Users\\jimmy\\Downloads\\python_script\\prd_create_account.json"
+TRACKER_FILE = "C:\\Users\\jimmy\\Downloads\\python_script\\current_row.txt"
 
 def get_current_row():
     if not os.path.exists(TRACKER_FILE):
@@ -44,7 +44,11 @@ def run_one_row():
 
         # Append new account if we've reached the end
         if current_row >= len(data):
+<<<<<<< HEAD
             print("No more rows left — appending a new account to continue...")
+=======
+            print(" No more rows left — appending a new account to continue...")
+>>>>>>> 73b82a8 (Fix paths and setup GitHub Actions)
             append_new_account()
             # Re-read file to include the new row
             with open(CSV_FILE, newline='', encoding='utf-8') as csvfile2:

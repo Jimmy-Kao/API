@@ -21,7 +21,9 @@ jobs:
         run: pip install schedule
 
       - name: Run Python Newman Script
-        run: python append_new_account.py
+        run: 
+            python C:\Users\jimmy\actions-runner\_work\API\API\append_new_account.py
+            cd C:\Users\jimmy\Downloads\python_script
         env:
           PRD: https://trade.ytjokbt.com/v2
           PRD_MTRADE: https://39.108.127.136:6007/v1
