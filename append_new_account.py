@@ -44,7 +44,7 @@ def run_one_row():
 
         # Append new account if we've reached the end
         if current_row >= len(data):
-            print("⚠️ No more rows left — appending a new account to continue...")
+            print("!! No more rows left — appending a new account to continue...")
             append_new_account()
             # Re-read file to include the new row
             with open(CSV_FILE, newline='', encoding='utf-8') as csvfile2:
