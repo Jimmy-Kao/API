@@ -42,34 +42,35 @@ def run_one_row():
         rows = list(csv.reader(csvfile))
         header, data = rows[0], rows[1:]
 
-        # Append new account if we've reached the end
         if current_row >= len(data):
-            print("No more rows left — appending a new account to continue...")
+            print(" No more rows left — appending a new account to continue...")
             append_new_account()
-            # Re-read file to include the new row
+            # Re-read and reset current_row to the new last row
             with open(CSV_FILE, newline='', encoding='utf-8') as csvfile2:
                 rows = list(csv.reader(csvfile2))
                 header, data = rows[0], rows[1:]
+            current_row = len(data) - 1  # ✅ FIX: Reset index to new row
 
-        # Write current row to temp file
-        with open(TEMP_CSV, "w", newline='', encoding='utf-8') as temp:
-            writer = csv.writer(temp)
-            writer.writerow(header)
-            writer.writerow(data[current_row])
+    # Now safe to use data[current_row]
+    with open(TEMP_CSV, "w", newline='', encoding='utf-8') as temp:
+        writer = csv.writer(temp)
+        writer.writerow(header)
+        writer.writerow(data[current_row])
 
-        print(f"[RUNNING] Row {current_row + 1}/{len(data)} at {datetime.now()}")
+    print(f"[RUN] Row {current_row + 1}/{len(data)} at {datetime.now()}")
 
-        command = (
-            f'newman run "{COLLECTION_FILE}" '
-            f'--iteration-data "{TEMP_CSV}" '
-            f'--delay-request 3000 '
-            f'--env-var "prd=https://trade.ytjokbt.com/v2" '
-            f'--env-var "prd_mtrade=https://39.108.127.136:6007/v1" '
-            f'--insecure'
-        )
-        os.system(command)
+    command = (
+        f'newman run "{COLLECTION_FILE}" '
+        f'--iteration-data "{TEMP_CSV}" '
+        f'--delay-request 3000 '
+        f'--env-var "prd=https://trade.ytjokbt.com/v2" '
+        f'--env-var "prd_mtrade=https://39.108.127.136:6007/v1" '
+        f'--insecure'
+    )
+    os.system(command)
 
-        save_current_row(current_row + 1)
+    save_current_row(current_row + 1)
+
 
 if __name__ == "__main__":
     run_one_row()
