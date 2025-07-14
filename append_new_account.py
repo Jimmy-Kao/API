@@ -32,7 +32,7 @@ def append_new_account():
         writer = csv.writer(f)
         writer.writerow(new_row)
 
-    print(f"📦 Appended new account: {new_row}")
+    print(f"[APPEND] New account added: {new_row}")
     return new_row
 
 def run_one_row():
