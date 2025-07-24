@@ -1,0 +1,58 @@
+from appium.webdriver import Remote
+from appium.options.android import UiAutomator2Options
+import time
+
+def run_sequence_on_device(device_udid, app_sequence, round_num):
+    print(f"\n🎯 [Round {round_num}] Starting sequence on device: {device_udid}")
+    for app in app_sequence:
+        package, activity = app["package"], app["activity"]
+
+        # Set up capabilities
+        options = UiAutomator2Options()
+        options.set_capability("platformName", "Android")
+        options.set_capability("deviceName", device_udid)
+        options.set_capability("udid", device_udid)
+        options.set_capability("appPackage", package)
+        options.set_capability("appActivity", activity)
+        options.set_capability("noReset", True)
+
+        print(f"🚀 Launching {package} on {device_udid}")
+        driver = Remote("http://localhost:4723", options=options)
+
+        time.sleep(5)  # Wait for app to fully load
+
+        # Assert app is launched
+        assert driver.current_package == package, f"❌ {package} failed to launch on {device_udid}"
+        print(f"✅ Launched {package} on {device_udid}")
+
+        # Kill the app
+        driver.terminate_app(package)
+        print(f"🛑 Killed {package} on {device_udid}")
+
+        driver.quit()
+        print(f"🔚 Closed session for {package} on {device_udid}")
+        print("-" * 60)
+        time.sleep(2)  # Brief pause before next app
+
+# === App info ===
+app1 = {
+    "package": "com.ytapp.zhixuan.app",
+    "activity": "german.immigrant.offensive.furniture.ApartmentDeficitActivity"
+}
+
+app2 = {
+    "package": "com.clhqandroid.app",
+    "activity": "regional.direction.proper.AircraftLifeActivity"
+}
+
+app_sequence = [app1, app2]
+
+# === Devices ===
+deviceA = "10ADCS0YH100510"
+deviceB = "d9e2ef8b"
+
+# === Repeat 10 times ===
+for i in range(1, 11):
+    print(f"\n================ ROUND {i} =================")
+    run_sequence_on_device(deviceA, app_sequence, i)
+    run_sequence_on_device(deviceB, app_sequence, i)

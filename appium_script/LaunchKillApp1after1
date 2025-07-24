@@ -1,0 +1,41 @@
+from appium.webdriver import Remote
+from appium.options.android import UiAutomator2Options
+import time
+
+def run_on_device(device_udid, package, activity):
+    # Configure capabilities for each device
+    options = UiAutomator2Options()
+    options.set_capability("platformName", "Android")
+    options.set_capability("deviceName", device_udid)
+    options.set_capability("udid", device_udid)
+    options.set_capability("appPackage", package)
+    options.set_capability("appActivity", activity)
+    options.set_capability("noReset", True)
+
+    print(f"🚀 Launching {package} on {device_udid}")
+    driver = Remote("http://localhost:4723", options=options)
+
+    time.sleep(5)  # Wait for app to load
+
+    # Verify app launched
+    assert driver.current_package == package, f"{package} failed to launch on {device_udid}"
+
+    print(f"✅ App launched on {device_udid}, now terminating...")
+
+    driver.terminate_app(package)
+    print(f"🛑 App killed on {device_udid}")
+
+    driver.quit()
+    print(f"🔚 Session closed for {device_udid}")
+    print("=" * 50)
+    time.sleep(2)
+
+# === App package/activity info ===
+APP_PACKAGE = "com.ytapp.zhixuan.app"
+APP_ACTIVITY = "german.immigrant.offensive.furniture.ApartmentDeficitActivity"
+
+# === Run on Device A ===
+run_on_device("10ADCS0YH100510", APP_PACKAGE, APP_ACTIVITY)
+
+# === Run on Device B ===
+run_on_device("d9e2ef8b", APP_PACKAGE, APP_ACTIVITY)
