@@ -1,0 +1,29 @@
+from appium.webdriver.webdriver import WebDriver
+from appium import webdriver
+from appium.options.android import UiAutomator2Options
+import time
+
+# Appium setup
+options = UiAutomator2Options()
+options.set_capability("platformName", "Android")
+options.set_capability("deviceName", "Android Emulator")  # Change to your device name
+options.set_capability("appPackage", "com.ytjy.ytjyapp")
+options.set_capability("appActivity", ".MainActivity")  # Change to actual activity
+options.set_capability("noReset", True)
+
+# Launch App
+driver: WebDriver = webdriver.Remote("http://localhost:4723", options=options)
+print("🚀 App launched")
+time.sleep(5)
+
+# Click the "交易" button using XPath
+trade_button = driver.find_element("xpath", '//android.widget.TextView[@text="交易"]')
+trade_button.click()
+print("✅ Clicked on '交易'")
+
+# Optional wait or further actions...
+time.sleep(2)
+
+# Close the app
+driver.quit()
+print("🛑 App closed")
